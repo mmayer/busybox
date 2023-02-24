@@ -29,7 +29,7 @@
 
 //applet:IF_SEEDRNG(APPLET(seedrng, BB_DIR_USR_SBIN, BB_SUID_DROP))
 
-//kbuild:lib-$(CONFIG_SEEDRNG) += seedrng.o
+//kbuild:lib-$(CONFIG_SEEDRNG) += getrandom.o seedrng.o
 
 //usage:#define seedrng_trivial_usage
 //usage:	"[-d DIR] [-n]"
@@ -42,7 +42,11 @@
 #include "libbb.h"
 
 #include <linux/random.h>
+#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 24
+#include "random.h"
+#else
 #include <sys/random.h>
+#endif
 #include <sys/file.h>
 
 #ifndef GRND_INSECURE
